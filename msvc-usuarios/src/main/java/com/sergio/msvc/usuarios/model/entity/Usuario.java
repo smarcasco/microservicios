@@ -1,11 +1,10 @@
 package com.sergio.msvc.usuarios.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 
 @Entity
 @Table(name="usuarios")
-@Data
 public class Usuario {
 
     @Id
@@ -15,6 +14,7 @@ public class Usuario {
     private String nombre;
 
     @Column(unique=true)
+    @Getter
     private String email;
 
 }
