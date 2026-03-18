@@ -6,9 +6,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,10 +36,21 @@ public class UsuarioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
+        Map<String, String> errores = checkErrors(result);
+        if (!CollectionUtils.isEmpty(errores)) {
+            return ResponseEntity.badRequest().body(errores);
         }
         return ResponseEntity.ok(service.guardar(usuario));
+    }
+
+    private static Map<String, String> checkErrors(BindingResult result) {
+        Map<String, String> errores = new HashMap<>();
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(err -> {
+                errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+            });
+        }
+        return errores;
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +60,11 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, @PathVariable Long id) {
+    public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, @PathVariable Long id, BindingResult result) {
+        Map<String, String> errores = checkErrors(result);
+        if (!CollectionUtils.isEmpty(errores)) {
+            return ResponseEntity.badRequest().body(errores);
+        }
         Optional<Usuario> usuarioOptional = service.buscarUsuarioPorId(id);
         if (usuarioOptional.isPresent()) {
             Usuario usuarioDb = usuarioOptional.get();

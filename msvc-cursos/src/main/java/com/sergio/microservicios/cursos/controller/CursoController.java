@@ -30,7 +30,7 @@ public class CursoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> crear(@RequestBody Curso   usuario) {
+    public ResponseEntity<?> crear(@RequestBody Curso usuario) {
         return ResponseEntity.ok(service.guardar(usuario));
     }
 

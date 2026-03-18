@@ -2,6 +2,7 @@ package com.sergio.msvc.usuarios.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,19 +19,19 @@ public class Usuario {
 
     @Getter
     @Setter
-    @NotEmpty(message = "El nombre no puede ser vacio")
+    @NotBlank(message = "no puede ser vacio")
     private String nombre;
 
     @Column(unique=true)
     @Getter
     @Setter
-    @NotEmpty(message = "El email no puede ser vacio")
-    @Email(message = "El email debe ser valido")
+    @NotBlank(message = "no puede ser vacio")
+    @Email(message = "debe ser valido")
     private String email;
 
     @Getter
     @Setter
-    @NotEmpty(message = "La contraseña no puede ser vacia")
+    @NotBlank(message = "no puede ser vacio")
     private String password;
 
 }
