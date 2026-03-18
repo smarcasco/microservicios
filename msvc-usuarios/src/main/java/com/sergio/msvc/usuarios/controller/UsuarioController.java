@@ -46,8 +46,15 @@ public class UsuarioController {
         Optional<Usuario> usuarioOptional = service.buscarUsuarioPorId(id);
         if (usuarioOptional.isPresent()) {
             Usuario usuarioDb = usuarioOptional.get();
-            usuarioDb.setNombre(usuario.getNombre());
-            usuarioDb.setEmail(usuario.getEmail());
+            if (usuario.getNombre()!= null) {
+                usuarioDb.setNombre(usuario.getNombre());
+            }
+            if (usuario.getEmail()!= null) {
+                usuarioDb.setEmail(usuario.getEmail());
+            }
+            if (usuario.getPassword()!= null) {
+                usuarioDb.setPassword(usuario.getPassword());
+            }
             return ResponseEntity.ok(service.guardar(usuarioDb));
         }
         return ResponseEntity.notFound().build();

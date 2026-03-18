@@ -23,4 +23,8 @@ public class Usuario {
     @Setter
     private String email;
 
+    @Getter
+    @Setter
+    private String password;
+
 }
