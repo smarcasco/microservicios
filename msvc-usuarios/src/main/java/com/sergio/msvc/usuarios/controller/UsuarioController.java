@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +20,12 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<?> listar() {
+    public ResponseEntity<?> search() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> detalle(@PathVariable Long id) {
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
         return service.findUserById(id)
                 .map(usuario -> ResponseEntity.ok().body(usuario))
                 .orElse(ResponseEntity.notFound().build());
@@ -35,7 +34,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody Usuario usuario, BindingResult result) {
         if (result.hasErrors()) {
             return validate(result);
         }
@@ -54,13 +53,13 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         service.deleteUser(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, @PathVariable Long id, BindingResult result) {
+    public ResponseEntity<?> updateUser(@Valid @RequestBody Usuario usuario, @PathVariable Long id, BindingResult result) {
         if (result.hasErrors()) {
             return validate(result);
         }
