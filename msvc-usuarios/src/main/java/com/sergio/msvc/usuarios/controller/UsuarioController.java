@@ -22,12 +22,12 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(service.listar());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
-        return service.buscarUsuarioPorId(id)
+        return service.findUserById(id)
                 .map(usuario -> ResponseEntity.ok().body(usuario))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -36,36 +36,40 @@ public class UsuarioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
-        Map<String, String> errores = checkErrors(result);
-        if (!CollectionUtils.isEmpty(errores)) {
-            return ResponseEntity.badRequest().body(errores);
+        if (result.hasErrors()) {
+            return validate(result);
         }
-        return ResponseEntity.ok(service.guardar(usuario));
+        if (service.findUserByEmail(usuario.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Ya existe un usuario con ese email"));
+        }
+        return ResponseEntity.ok(service.saveUser(usuario));
     }
 
-    private static Map<String, String> checkErrors(BindingResult result) {
+    private static ResponseEntity<?> validate(BindingResult result) {
         Map<String, String> errores = new HashMap<>();
-        if (result.hasErrors()) {
-            result.getFieldErrors().forEach(err -> {
+        result.getFieldErrors().forEach(err -> {
                 errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
             });
-        }
-        return errores;
+        return ResponseEntity.badRequest().body(errores);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+        service.deleteUser(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, @PathVariable Long id, BindingResult result) {
-        Map<String, String> errores = checkErrors(result);
-        if (!CollectionUtils.isEmpty(errores)) {
-            return ResponseEntity.badRequest().body(errores);
+        if (result.hasErrors()) {
+            return validate(result);
         }
-        Optional<Usuario> usuarioOptional = service.buscarUsuarioPorId(id);
+
+        if (service.findUserByEmail(usuario.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Ya existe un usuario con ese email"));
+        }
+
+        Optional<Usuario> usuarioOptional = service.findUserById(id);
         if (usuarioOptional.isPresent()) {
             Usuario usuarioDb = usuarioOptional.get();
             if (usuario.getNombre()!= null) {
@@ -77,7 +81,7 @@ public class UsuarioController {
             if (usuario.getPassword()!= null) {
                 usuarioDb.setPassword(usuario.getPassword());
             }
-            return ResponseEntity.ok(service.guardar(usuarioDb));
+            return ResponseEntity.ok(service.saveUser(usuarioDb));
         }
         return ResponseEntity.notFound().build();
     }
