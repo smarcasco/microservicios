@@ -12,8 +12,8 @@ public interface UsuarioClientRest {
     @GetMapping("/{id}")
     public Usuario findById(@PathVariable Long id);
 
-    @GetMapping("/usuarios")
-    public List<Usuario> findAllByCourse(@RequestParam Long ids);
+    @GetMapping("/byIds")
+    public List<Usuario> findAllByCourse(@RequestParam List<Long> ids);
 
     @PostMapping("/")
     public Usuario create(@RequestBody Usuario usuario);
