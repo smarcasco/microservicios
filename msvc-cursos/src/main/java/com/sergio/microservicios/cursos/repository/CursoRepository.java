@@ -1,7 +1,14 @@
 package com.sergio.microservicios.cursos.repository;
 
 import com.sergio.microservicios.cursos.models.entity.Curso;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CursoRepository extends CrudRepository<Curso, Long> {
+
+     @Modifying
+     @Query("delete from Curso c where c.usuarioId = ?1")
+     public void deleteUserFromCourses(Long usuarioId);
+
 }

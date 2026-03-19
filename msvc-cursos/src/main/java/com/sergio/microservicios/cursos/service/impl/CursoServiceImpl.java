@@ -35,9 +35,13 @@ public class CursoServiceImpl implements CursoService {
         Optional<Curso> result = repository.findById(id);
         if (result.isPresent()) {
             Curso curso = result.get();
-            List<Long> ids = curso.getCursoUsuarios().stream().map(cu -> cu.getUsuarioId()).toList();
-            List<Usuario> usuarios = client.findAllByCourse(ids);
-            curso.setUsuarios(usuarios);
+            if (!curso.getCursoUsuarios().isEmpty()) {
+
+                List<Long> ids = curso.getCursoUsuarios().stream().map(CursoUsuario::getUsuarioId).toList();
+                List<Usuario> usuarios = client.findAllByCourse(ids);
+                curso.setUsuarios(usuarios);
+
+            }
         }
         return result;
     }
@@ -88,7 +92,7 @@ public class CursoServiceImpl implements CursoService {
 
     @Transactional
     @Override
-    public Optional<Usuario> deleteUser(Usuario usuario, Long cursoId) {
+    public Optional<Usuario> deleteUserFromCourse(Usuario usuario, Long cursoId) {
         Optional<Curso> cursoOptional = repository.findById(cursoId);
         if (cursoOptional.isPresent()) {
             Usuario usuarioMsvc = client.findById(usuario.getId());
@@ -100,5 +104,11 @@ public class CursoServiceImpl implements CursoService {
             return Optional.of(usuarioMsvc);
         }
         return Optional.empty();
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(Long usuarioId) {
+        repository.deleteUserFromCourses(usuarioId);
     }
 }

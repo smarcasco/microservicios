@@ -20,7 +20,8 @@ public interface CursoService {
     // Métodos para gestionar usuarios en cursos
     Optional<Usuario> assignCourse(Usuario usuario, Long cursoId);
     Optional<Usuario> createUser(Usuario usuario, Long cursoId);
-    Optional<Usuario> deleteUser(Usuario usuario, Long cursoId);
+    Optional<Usuario> deleteUserFromCourse(Usuario usuario, Long cursoId);
+    void deleteUser(Long usuarioId);
 
 
 }

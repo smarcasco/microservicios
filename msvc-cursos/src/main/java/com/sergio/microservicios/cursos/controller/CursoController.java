@@ -83,10 +83,10 @@ public class CursoController {
 
     }
 
-    @DeleteMapping("/eliminar-usuario/{cursoId}")
-    public ResponseEntity<?> eliminarUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId){
+    @DeleteMapping("/eliminar-usuarios/{cursoId}")
+    public ResponseEntity<?> eliminarUsuarios(@RequestBody Usuario usuario, @PathVariable Long cursoId){
         try {
-            Optional<Usuario> usuarioOptional = service.deleteUser(usuario, cursoId);
+            Optional<Usuario> usuarioOptional = service.deleteUserFromCourse(usuario, cursoId);
             if (usuarioOptional.isPresent()) {
                 return ResponseEntity.ok().body(usuarioOptional.get());
             }
@@ -95,5 +95,12 @@ public class CursoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Error al buscar el usuario en el servicio de usuarios: " + e.getMessage()));
         }
     }
+
+    @DeleteMapping("/eliminar-usuario/{usuarioId}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long usuarioId){
+        service.deleteUser(usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
