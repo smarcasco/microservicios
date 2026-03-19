@@ -1,6 +1,6 @@
 package com.sergio.microservicios.cursos.controller;
 
-import com.sergio.microservicios.cursos.entity.Curso;
+import com.sergio.microservicios.cursos.models.entity.Curso;
 import com.sergio.microservicios.cursos.service.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
