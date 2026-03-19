@@ -23,6 +23,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Usuario> findAllById(Iterable<Long> ids) {
         return (List<Usuario>) repository.findAllById(ids);
     }

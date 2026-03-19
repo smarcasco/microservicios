@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +25,11 @@ public class UsuarioController {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @GetMapping("/byIds")
+    public ResponseEntity<?> getUsersByIds(@RequestParam(name = "ids") List<Long> ids) {
+        return ResponseEntity.ok(service.findAllById(ids));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         return service.findUserById(id)
@@ -31,10 +37,6 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/usuarios")
-    public ResponseEntity<?> getUsersByIds(@RequestParam(name = "ids") Iterable<Long> ids) {
-        return ResponseEntity.ok(service.findAllById(ids));
-    }
 
 
     @PostMapping
