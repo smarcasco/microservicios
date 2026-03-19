@@ -23,7 +23,7 @@ public class Curso {
     private List<CursoUsuario> cursoUsuarios = new ArrayList<>();
 
     @Transient
-    private List<Usuario> usuarios;
+    private List<Usuario> usuarios = new ArrayList<>();
 
     public void addCursoUsuario(CursoUsuario cursoUsuario){
         this.cursoUsuarios.add(cursoUsuario);
