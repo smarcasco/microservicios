@@ -30,7 +30,8 @@ public class Curso {
     }
 
     public void removeCursoUsuario(CursoUsuario cursoUsuario){
-        this.cursoUsuarios.remove(cursoUsuario);
+        CursoUsuario temp = new CursoUsuario(id, cursoUsuario.getUsuarioId());
+        this.cursoUsuarios.remove(temp);
     }
 
 }
