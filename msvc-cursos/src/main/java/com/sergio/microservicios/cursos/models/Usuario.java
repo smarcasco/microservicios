@@ -1,6 +1,5 @@
-package com.sergio.microservicios.cursos.models.entity;
+package com.sergio.microservicios.cursos.models;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 

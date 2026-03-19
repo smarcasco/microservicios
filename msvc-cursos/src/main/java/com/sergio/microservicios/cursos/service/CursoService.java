@@ -1,7 +1,7 @@
 package com.sergio.microservicios.cursos.service;
 
 import com.sergio.microservicios.cursos.models.entity.Curso;
-import com.sergio.microservicios.cursos.models.entity.Usuario;
+import com.sergio.microservicios.cursos.models.Usuario;
 
 import java.util.List;
 import java.util.Optional;

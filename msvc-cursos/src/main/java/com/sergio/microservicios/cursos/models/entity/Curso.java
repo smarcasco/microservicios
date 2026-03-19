@@ -1,32 +1,28 @@
 package com.sergio.microservicios.cursos.models.entity;
 
+import com.sergio.microservicios.cursos.models.Usuario;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="cursos")
+@Data
 public class Curso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String nombre;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Getter
-    private List<CursoUsuario> cursoUsuarios;
+    @JoinColumn(name = "curso_id")
+    private List<CursoUsuario> cursoUsuarios = new ArrayList<>();
 
     @Transient
-    @Getter
-    @Setter
     private List<Usuario> usuarios;
 
     public void addCursoUsuario(CursoUsuario cursoUsuario){

@@ -1,6 +1,6 @@
 package com.sergio.microservicios.cursos.clients;
 
-import com.sergio.microservicios.cursos.models.entity.Usuario;
+import com.sergio.microservicios.cursos.models.Usuario;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

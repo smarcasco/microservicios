@@ -1,7 +1,7 @@
 package com.sergio.microservicios.cursos.controller;
 
 import com.sergio.microservicios.cursos.models.entity.Curso;
-import com.sergio.microservicios.cursos.models.entity.Usuario;
+import com.sergio.microservicios.cursos.models.Usuario;
 import com.sergio.microservicios.cursos.service.CursoService;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;

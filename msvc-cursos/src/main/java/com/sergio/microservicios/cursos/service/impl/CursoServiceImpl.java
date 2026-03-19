@@ -3,7 +3,7 @@ package com.sergio.microservicios.cursos.service.impl;
 import com.sergio.microservicios.cursos.clients.UsuarioClientRest;
 import com.sergio.microservicios.cursos.models.entity.Curso;
 import com.sergio.microservicios.cursos.models.entity.CursoUsuario;
-import com.sergio.microservicios.cursos.models.entity.Usuario;
+import com.sergio.microservicios.cursos.models.Usuario;
 import com.sergio.microservicios.cursos.repository.CursoRepository;
 import com.sergio.microservicios.cursos.service.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,6 @@ public class CursoServiceImpl implements CursoService {
             Curso curso = cursoOptional.get();
             CursoUsuario cursoUsuario = new CursoUsuario();
             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
-            cursoUsuario.setId(curso.getId());
             curso.addCursoUsuario(cursoUsuario);
             repository.save(curso);
             return Optional.of(usuarioMsvc);
@@ -72,7 +71,6 @@ public class CursoServiceImpl implements CursoService {
             Curso curso = cursoOptional.get();
             CursoUsuario cursoUsuario = new CursoUsuario();
             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
-            cursoUsuario.setId(curso.getId());
             curso.addCursoUsuario(cursoUsuario);
             repository.save(curso);
             return Optional.of(usuarioMsvc);
@@ -89,7 +87,6 @@ public class CursoServiceImpl implements CursoService {
             Curso curso = cursoOptional.get();
             CursoUsuario cursoUsuario = new CursoUsuario();
             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
-            cursoUsuario.setId(curso.getId());
             curso.removeCursoUsuario(cursoUsuario);
             repository.save(curso);
             return Optional.of(usuarioMsvc);

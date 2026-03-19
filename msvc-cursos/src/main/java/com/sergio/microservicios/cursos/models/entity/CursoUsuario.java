@@ -1,24 +1,22 @@
 package com.sergio.microservicios.cursos.models.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "cursos_usuarios")
-@EqualsAndHashCode
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CursoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private Long id;
 
-    @Column(name = "usuario_id",unique = true)
-    @Getter
-    @Setter
+    @Column(name = "usuario_id")
     private Long usuarioId;
 
 }
