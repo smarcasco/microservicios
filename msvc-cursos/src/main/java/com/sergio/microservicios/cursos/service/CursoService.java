@@ -1,18 +1,26 @@
 package com.sergio.microservicios.cursos.service;
 
 import com.sergio.microservicios.cursos.models.entity.Curso;
+import com.sergio.microservicios.cursos.models.entity.Usuario;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CursoService {
 
-    List<Curso> listar();
+    // Métodos para gestionar cursos
+    List<Curso> search();
 
-    Optional<Curso> buscarCursoPorId(Long id);
+    Optional<Curso> findCourseById(Long id);
 
-    Curso guardar (Curso usuario);
+    Curso save(Curso usuario);
 
-    void eliminar (Long id);
+    void delete(Long id);
+
+    // Métodos para gestionar usuarios en cursos
+    Optional<Usuario> assignCourse(Usuario usuario, Long cursoId);
+    Optional<Usuario> createUser(Usuario usuario, Long cursoId);
+    Optional<Usuario> deleteUser(Usuario usuario, Long cursoId);
+
 
 }

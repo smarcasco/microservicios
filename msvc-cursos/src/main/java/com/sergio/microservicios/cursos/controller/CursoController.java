@@ -17,12 +17,12 @@ public class CursoController {
 
     @GetMapping
     public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(service.listar());
+        return ResponseEntity.ok(service.search());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
-        return service.buscarCursoPorId(id)
+        return service.findCourseById(id)
                 .map(usuario -> ResponseEntity.ok().body(usuario))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -31,24 +31,24 @@ public class CursoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> crear(@RequestBody Curso usuario) {
-        return ResponseEntity.ok(service.guardar(usuario));
+        return ResponseEntity.ok(service.save(usuario));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+        service.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editar(@RequestBody Curso usuario, @PathVariable Long id) {
-        Optional<Curso> usuarioOptional = service.buscarCursoPorId(id);
+        Optional<Curso> usuarioOptional = service.findCourseById(id);
         if (usuarioOptional.isPresent()) {
             Curso usuarioDb = usuarioOptional.get();
             if (usuario.getNombre()!= null) {
                 usuarioDb.setNombre(usuario.getNombre());
             }
-            return ResponseEntity.ok(service.guardar(usuarioDb));
+            return ResponseEntity.ok(service.save(usuarioDb));
         }
         return ResponseEntity.notFound().build();
     }
