@@ -31,6 +31,11 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> getUsersByIds(@RequestParam(name = "ids") Iterable<Long> ids) {
+        return ResponseEntity.ok(service.findAllById(ids));
+    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,14 +47,6 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(Map.of("error", "Ya existe un usuario con ese email"));
         }
         return ResponseEntity.ok(service.saveUser(usuario));
-    }
-
-    private static ResponseEntity<?> validate(BindingResult result) {
-        Map<String, String> errores = new HashMap<>();
-        result.getFieldErrors().forEach(err -> {
-                errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
-            });
-        return ResponseEntity.badRequest().body(errores);
     }
 
     @DeleteMapping("/{id}")
@@ -83,6 +80,14 @@ public class UsuarioController {
             return ResponseEntity.ok(service.saveUser(usuarioDb));
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private static ResponseEntity<?> validate(BindingResult result) {
+        Map<String, String> errores = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errores);
     }
 
 }
