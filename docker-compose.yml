@@ -14,8 +14,8 @@ services:
 
   msvc-usuarios:
     build:
-      context: .
-      dockerfile: ./msvc-usuarios/Dockerfile
+      context: ./msvc-usuarios
+      dockerfile: Dockerfile
     container_name: msvc-usuarios
     ports:
       - "8001:8001"

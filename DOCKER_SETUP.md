@@ -14,6 +14,8 @@ docker run -p 8001:8001 \
   msvc-usuarios:latest
 ```
 
+El `Dockerfile` de `msvc-usuarios` ya usa el archivo `msvc-usuarios/.m2/settings.xml`, por lo que el build funciona desde el propio módulo y no depende del `pom.xml` padre de la raíz.
+
 ### Opción 2: Ejecutar con Docker Compose (Recomendado)
 
 Ejecutar todos los servicios (MySQL, msvc-usuarios, PostgreSQL, msvc-cursos):

@@ -3,20 +3,15 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy parent pom.xml first
-COPY ../pom.xml ../pom.xml
-
-# Copy module pom.xml
+# Configura el settings.xml antes de ejecutar Maven
+COPY .m2/settings.xml /root/.m2/settings.xml
 COPY pom.xml .
-
-# Download dependencies
-RUN mvn dependency:go-offline
 
 # Copy source code
 COPY src ./src
 
 # Build the application
-RUN mvn clean package -DskipTests
+RUN mvn -s /root/.m2/settings.xml clean package -DskipTests
 
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
