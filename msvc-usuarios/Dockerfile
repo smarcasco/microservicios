@@ -3,7 +3,10 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy pom.xml
+# Copy parent pom.xml first
+COPY ../pom.xml ../pom.xml
+
+# Copy module pom.xml
 COPY pom.xml .
 
 # Download dependencies
@@ -31,4 +34,3 @@ ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
