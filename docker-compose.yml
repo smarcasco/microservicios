@@ -41,8 +41,8 @@ services:
 
   msvc-cursos:
     build:
-      context: ./msvc-cursos
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./msvc-cursos/Dockerfile
     container_name: msvc-cursos
     ports:
       - "8002:8002"
