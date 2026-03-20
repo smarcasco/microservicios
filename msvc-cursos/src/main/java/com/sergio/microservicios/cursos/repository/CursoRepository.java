@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface CursoRepository extends CrudRepository<Curso, Long> {
 
      @Modifying
-     @Query("delete from Curso c where c.usuarioId = ?1")
+     @Query("delete from CursoUsuario cu where cu.usuarioId = ?1")
      public void deleteUserFromCourses(Long usuarioId);
 
 }

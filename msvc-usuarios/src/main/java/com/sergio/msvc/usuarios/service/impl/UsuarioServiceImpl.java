@@ -1,5 +1,6 @@
 package com.sergio.msvc.usuarios.service.impl;
 
+import com.sergio.msvc.usuarios.clients.CursoClientRest;
 import com.sergio.msvc.usuarios.model.entity.Usuario;
 import com.sergio.msvc.usuarios.repository.UsuarioRepository;
 import com.sergio.msvc.usuarios.service.UsuarioService;
@@ -15,6 +16,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
+
+    @Autowired
+    private CursoClientRest client;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,6 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
+        client.eliminarUsuario(id);
         repository.deleteById(id);
     }
 }
