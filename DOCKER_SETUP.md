@@ -53,12 +53,14 @@ docker-compose down -v
 - `SPRING_DATASOURCE_URL`: jdbc:mysql://mysql:3306/msvc_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 - `SPRING_DATASOURCE_USERNAME`: root
 - `SPRING_DATASOURCE_PASSWORD`: 123456
+- `CLIENTS_CURSOS_URL`: http://msvc-cursos:8002
 - `JAVA_OPTS`: -Xmx512m -Xms256m
 
 ### msvc-cursos
 - `SPRING_DATASOURCE_URL`: jdbc:postgresql://postgresql:5432/msvc_cursos
 - `SPRING_DATASOURCE_USERNAME`: postgres
 - `SPRING_DATASOURCE_PASSWORD`: 123456
+- `CLIENTS_USUARIOS_URL`: http://msvc-usuarios:8001
 - `JAVA_OPTS`: -Xmx512m -Xms256m
 
 ## Verificar que los servicios están corriendo
