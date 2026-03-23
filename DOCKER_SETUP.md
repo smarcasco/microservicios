@@ -8,7 +8,7 @@
 cd msvc-usuarios
 docker build -t msvc-usuarios:latest .
 docker run -p 8001:8001 \
-  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/msvc_usuarios \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/msvc_usuarios?useSSL=false\&serverTimezone=UTC\&allowPublicKeyRetrieval=true \
   -e SPRING_DATASOURCE_USERNAME=root \
   -e SPRING_DATASOURCE_PASSWORD=123456 \
   msvc-usuarios:latest
@@ -50,7 +50,7 @@ docker-compose down -v
 ## Variables de Entorno
 
 ### msvc-usuarios
-- `SPRING_DATASOURCE_URL`: jdbc:mysql://mysql:3306/msvc_usuarios?useSSL=false&serverTimezone=UTC
+- `SPRING_DATASOURCE_URL`: jdbc:mysql://mysql:3306/msvc_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 - `SPRING_DATASOURCE_USERNAME`: root
 - `SPRING_DATASOURCE_PASSWORD`: 123456
 - `JAVA_OPTS`: -Xmx512m -Xms256m
