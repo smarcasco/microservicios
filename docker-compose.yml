@@ -10,7 +10,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
       - microservicios-network
 
@@ -37,11 +37,10 @@ services:
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: msvc_cursos
-      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
-      - ./data/postgresql:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - microservicios-network
 
@@ -66,4 +65,8 @@ services:
 networks:
   microservicios-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+  postgres-data:
 

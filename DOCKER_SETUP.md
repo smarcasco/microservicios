@@ -35,12 +35,15 @@ Detener servicios:
 docker-compose down
 ```
 
-Eliminar volúmenes:
+Eliminar contenedores (los datos se conservan en volúmenes):
+```bash
+docker-compose down
+```
+
+Eliminar contenedores Y volúmenes (borra todos los datos):
 ```bash
 docker-compose down -v
 ```
-
-Nota: la persistencia de MySQL y PostgreSQL usa bind mounts en `./data/mysql` y `./data/postgresql`, por lo que los datos no se eliminan con `down -v`.
 
 ## Configuración de Puertos
 
@@ -51,8 +54,19 @@ Nota: la persistencia de MySQL y PostgreSQL usa bind mounts en `./data/mysql` y 
 
 ## Persistencia de datos
 
-- **MySQL**: `./data/mysql`
-- **PostgreSQL**: `./data/postgresql`
+Los datos se persisten en volúmenes nombrados gestionados por Docker:
+
+- **MySQL**: volumen `mysql-data`
+- **PostgreSQL**: volumen `postgres-data`
+
+Los datos **no se pierden** al hacer `docker compose down`. Solo se borran con `docker compose down -v`.
+
+Para inspeccionar los volúmenes:
+```bash
+docker volume ls
+docker volume inspect microservicios_mysql-data
+docker volume inspect microservicios_postgres-data
+```
 
 ## Variables de Entorno
 
