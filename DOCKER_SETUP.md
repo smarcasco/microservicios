@@ -40,12 +40,19 @@ Eliminar volúmenes:
 docker-compose down -v
 ```
 
+Nota: la persistencia de MySQL y PostgreSQL usa bind mounts en `./data/mysql` y `./data/postgresql`, por lo que los datos no se eliminan con `down -v`.
+
 ## Configuración de Puertos
 
 - **msvc-usuarios**: 8001
 - **msvc-cursos**: 8002
 - **MySQL**: 3307
 - **PostgreSQL**: 5432
+
+## Persistencia de datos
+
+- **MySQL**: `./data/mysql`
+- **PostgreSQL**: `./data/postgresql`
 
 ## Variables de Entorno
 
