@@ -97,6 +97,6 @@ curl http://localhost:8002/
 ## Limpiar images y contenedores
 
 ```bash
-docker system prune -a
+sudo docker system prune -a
 ```
 
