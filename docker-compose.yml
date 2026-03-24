@@ -37,6 +37,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: msvc_cursos
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
