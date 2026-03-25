@@ -2,8 +2,8 @@ package org.aguzman.springcloud.msvc.cursos.models.entity;
 
 import org.aguzman.springcloud.msvc.cursos.models.Usuario;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
