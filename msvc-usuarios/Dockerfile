@@ -1,31 +1,34 @@
-# Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+ARG MSVC_NAME=msvc-usuarios
+
+FROM openjdk:17-jdk-alpine as builder
+
+ARG MSVC_NAME
+
+WORKDIR /app/$MSVC_NAME
+
+COPY ./pom.xml /app
+COPY ./$MSVC_NAME/.mvn ./.mvn
+COPY ./$MSVC_NAME/mvnw .
+COPY ./$MSVC_NAME/pom.xml .
+
+RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip && rm -r ./target/
+#RUN ./mvnw dependency:go-offline
+COPY ./$MSVC_NAME/src ./src
+
+RUN ./mvnw clean package -DskipTests
+
+FROM openjdk:17-jdk-alpine
+
+ARG MSVC_NAME
 
 WORKDIR /app
 
-# Configura el settings.xml antes de ejecutar Maven
-COPY .m2/settings.xml /root/.m2/settings.xml
-COPY pom.xml .
+RUN mkdir ./logs
 
-# Copy source code
-COPY src ./src
+ARG TARGET_FOLDER=/app/$MSVC_NAME/target
+COPY --from=builder $TARGET_FOLDER/msvc-usuarios-0.0.1-SNAPSHOT.jar .
+ARG PORT_APP=8001
+ENV PORT $PORT_APP
+EXPOSE $PORT
 
-# Build the application
-RUN mvn -s /root/.m2/settings.xml clean package -DskipTests
-
-# Stage 2: Runtime
-FROM eclipse-temurin:21-jre-alpine
-
-WORKDIR /app
-
-# Copy the JAR from build stage
-COPY --from=build /app/target/*.jar app.jar
-
-# Expose port
-EXPOSE 8001
-
-# Set environment variables
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "msvc-usuarios-0.0.1-SNAPSHOT.jar"]
