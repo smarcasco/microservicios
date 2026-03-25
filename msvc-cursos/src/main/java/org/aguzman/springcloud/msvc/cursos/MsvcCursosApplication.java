@@ -1,11 +1,11 @@
-package com.sergio.microservicios.cursos;
+package org.aguzman.springcloud.msvc.cursos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
 @EnableFeignClients
+@SpringBootApplication
 public class MsvcCursosApplication {
 
 	public static void main(String[] args) {

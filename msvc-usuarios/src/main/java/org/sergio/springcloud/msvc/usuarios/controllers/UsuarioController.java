@@ -1,5 +1,6 @@
 package org.sergio.springcloud.msvc.usuarios.controllers;
 
+import jakarta.validation.Valid;
 import org.sergio.springcloud.msvc.usuarios.models.entity.Usuario;
 import org.sergio.springcloud.msvc.usuarios.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.*;
 
 @RestController

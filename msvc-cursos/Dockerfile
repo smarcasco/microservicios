@@ -1,34 +1,23 @@
-# Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+FROM openjdk:17-jdk-alpine as builder
+
+WORKDIR /app/msvc-cursos
+
+COPY ./pom.xml /app
+COPY ./msvc-cursos/.mvn ./.mvn
+COPY ./msvc-cursos/mvnw .
+COPY ./msvc-cursos/pom.xml .
+
+#RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip && rm -r ./target/
+RUN ./mvnw dependency:go-offline
+COPY ./msvc-cursos/src ./src
+
+RUN ./mvnw clean package -DskipTests
+
+FROM openjdk:17-jdk-alpine
 
 WORKDIR /app
-
-# Copy pom.xml
-COPY pom.xml .
-
-# Download dependencies
-RUN mvn dependency:go-offline
-
-# Copy source code
-COPY src ./src
-
-# Build the application
-RUN mvn clean package -DskipTests
-
-# Stage 2: Runtime
-FROM eclipse-temurin:21-jre-alpine
-
-WORKDIR /app
-
-# Copy the JAR from build stage
-COPY --from=build /app/target/*.jar app.jar
-
-# Expose port
+RUN mkdir ./logs
+COPY --from=builder /app/msvc-cursos/target/msvc-cursos-0.0.1-SNAPSHOT.jar .
 EXPOSE 8002
 
-# Set environment variables
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
+CMD ["java", "-jar", "msvc-cursos-0.0.1-SNAPSHOT.jar"]
