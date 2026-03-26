@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-usuarios
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: msvc_usuarios
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - microservicios-network
+
+  msvc-usuarios:
+    image: smcasco/sergio-usuarios:latest
+    container_name: msvc-usuarios
+    ports:
+      - "8001:8001"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/msvc_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      CLIENTS_CURSOS_URL: http://msvc-cursos:8002
+    depends_on:
+      - mysql
+    networks:
+      - microservicios-network
+
+networks:
+  microservicios-network:
+    external: true
+    name: microservicios-network
+
+volumes:
+  mysql-data:
+

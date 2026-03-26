@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  postgresql:
+    image: postgres:15-alpine
+    container_name: postgres-cursos
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: msvc_cursos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - microservicios-network
+  msvc-cursos:
+    image: smcasco/sergio-cursos:latest
+    container_name: msvc-cursos
+    ports:
+      - "8002:8002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/msvc_cursos
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+      CLIENTS_USUARIOS_URL: http://msvc-usuarios:8001
+    depends_on:
+      - postgresql
+    networks:
+      - microservicios-network
+networks:
+  microservicios-network:
+    external: true
+    name: microservicios-network
+volumes:
+  postgres-data:
