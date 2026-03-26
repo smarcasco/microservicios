@@ -15,9 +15,7 @@ services:
       - microservicios-network
 
   msvc-usuarios:
-    build:
-      context: ./msvc-usuarios
-      dockerfile: Dockerfile
+    image: smcasco/sergio-usuarios:latest
     container_name: msvc-usuarios
     ports:
       - "8001:8001"
@@ -45,9 +43,7 @@ services:
       - microservicios-network
 
   msvc-cursos:
-    build:
-      context: ./msvc-cursos
-      dockerfile: Dockerfile
+    image: smcasco/sergio-cursos:latest
     container_name: msvc-cursos
     ports:
       - "8002:8002"
