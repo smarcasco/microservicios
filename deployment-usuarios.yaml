@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msvc-usuarios
+  labels:
+    app: msvc-usuarios
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: msvc-usuarios
+  template:
+    metadata:
+      labels:
+        app: msvc-usuarios
+    spec:
+      containers:
+        - name: msvc-usuarios
+          image: smcasco/sergio-usuarios:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/msvc_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "123456"
+            - name: CLIENTS_CURSOS_URL
+              value: "http://msvc-cursos:8002"
+          readinessProbe:
+            tcpSocket:
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: 8001
+            initialDelaySeconds: 60
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: msvc-usuarios
+spec:
+  selector:
+    app: msvc-usuarios
+  ports:
+    - port: 8001
+      targetPort: 8001
+  type: ClusterIP
+
+
