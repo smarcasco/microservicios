@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,6 +37,9 @@ spec:
               value: "%"
             - name: MYSQL_DATABASE
               value: msvc_usuarios
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
           readinessProbe:
             exec:
               command:
@@ -38,6 +52,10 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 10
             failureThreshold: 12
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-pvc
 ---
 apiVersion: v1
 kind: Service
