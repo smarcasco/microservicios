@@ -3,11 +3,11 @@ spring:
     gateway:
       routes:
         - id: msvc-users
-          uri: lb://msvc-users
+          uri: ${CLIENTS_USUARIOS_URL:http://localhost:8001}
           predicates:
             - Path=/api/users/**
         - id: msvc-courses
-          uri: lb://msvc-courses
+          uri: ${CLIENTS_CURSOS_URL:http://localhost:8002}
           predicates:
             - Path=/api/courses/**
       default-filters:
