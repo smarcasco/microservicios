@@ -17,7 +17,7 @@ spec:
       containers:
         - name: msvc-gateway
           image: smcasco/sergio-gateway:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -49,6 +49,3 @@ spec:
     - port: 8080
       targetPort: 8080
   type: ClusterIP
-
-
-
