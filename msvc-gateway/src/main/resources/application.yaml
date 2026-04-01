@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: msvc-users
+          uri: lb://msvc-users
+          predicates:
+            - Path=/api/users/**
+        - id: msvc-courses
+          uri: lb://msvc-courses
+          predicates:
+            - Path=/api/courses/**
+      default-filters:
+        - AddResponseHeader=X-Response-Time, #{T(java.lang.System).currentTimeMillis() - T(org.springframework.web.server.ServerWebExchange).getAttribute('startTime')}
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
