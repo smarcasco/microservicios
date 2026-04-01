@@ -14,12 +14,3 @@ spring:
             - Path=/api/courses/**
           filters:
             - StripPrefix=2
-      default-filters:
-        - AddResponseHeader=X-Response-Time, #{T(java.lang.System).currentTimeMillis() - T(org.springframework.web.server.ServerWebExchange).getAttribute('startTime')}
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            allowCredentials: true
