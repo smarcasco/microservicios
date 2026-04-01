@@ -6,10 +6,14 @@ spring:
           uri: ${CLIENTS_USUARIOS_URL:http://localhost:8001}
           predicates:
             - Path=/api/users/**
+          filters:
+            - StripPrefix=2
         - id: msvc-courses
           uri: ${CLIENTS_CURSOS_URL:http://localhost:8002}
           predicates:
             - Path=/api/courses/**
+          filters:
+            - StripPrefix=2
       default-filters:
         - AddResponseHeader=X-Response-Time, #{T(java.lang.System).currentTimeMillis() - T(org.springframework.web.server.ServerWebExchange).getAttribute('startTime')}
       globalcors:
