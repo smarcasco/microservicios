@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: msvc-gateway
-          image: smcasco/sergio-gateway:latest
+          image: smcasco/sergio-gateway:1.3
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
