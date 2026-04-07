@@ -5,6 +5,7 @@ import com.sergio.msvc.usuarios.model.entity.Usuario;
 import com.sergio.msvc.usuarios.repository.UsuarioRepository;
 import com.sergio.msvc.usuarios.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private CursoClientRest client;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,6 +50,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     @Override
     public Usuario saveUser(Usuario usuario) {
+        // Codificar la contraseña si no está ya codificada (BCrypt empieza por $2a$)
+        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         return repository.save(usuario);
     }
 

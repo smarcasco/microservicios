@@ -22,6 +22,8 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/byIds").permitAll()
+                // msvc-auth necesita llamar a este endpoint para validar credenciales
+                .requestMatchers(HttpMethod.GET, "/byEmail/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
