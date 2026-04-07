@@ -37,7 +37,12 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
+    @GetMapping("/byEmail/{email}")
+    public ResponseEntity<?> getUser(@PathVariable String email) {
+        return service.findUserByEmail(email)
+                .map(usuario -> ResponseEntity.ok().body(usuario))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
