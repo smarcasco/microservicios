@@ -30,6 +30,7 @@ services:
     networks:
       - microservicios-network
 
+# Para arrancar el network usar: docker network create microservicios-network
 networks:
   microservicios-network:
     external: true
