@@ -37,7 +37,8 @@ services:
       SPRING_DATASOURCE_USERNAME: msvc_user
       SPRING_DATASOURCE_PASSWORD: msvc_pass
       CLIENTS_CURSOS_URL: http://msvc-cursos:8002
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://msvc-auth:9000
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://msvc-auth:9000/auth
+      SPRING_SECURITY_OAUTH2_ISSUER_URI: http://msvc-auth:9000/auth
     depends_on:
       - mysql
       - msvc-auth
