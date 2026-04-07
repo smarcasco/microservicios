@@ -29,4 +29,3 @@ ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
