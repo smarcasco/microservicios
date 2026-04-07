@@ -37,6 +37,10 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+/**
+ * Configuración de Spring Authorization Server (OAuth2)
+ * para la arquitectura de microservicios
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -75,8 +79,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
                 )
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain
                 .formLogin(Customizer.withDefaults());
 
         return http.build();
@@ -85,30 +87,71 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles("USER")
+                .username("admin")
+                .password("admin123")
+                .roles("ADMIN")
                 .build();
 
         return new InMemoryUserDetailsManager(userDetails);
     }
 
+    /**
+     * Registra los clientes OAuth2 para cada microservicio:
+     * - Usuarios: puerto 8001
+     * - Cursos: puerto 8002
+     * - Gateway: puerto 8080
+     */
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("oidc-client")
-                .clientSecret("{noop}secret")
+        // Cliente para el servicio de Usuarios (puerto 8001)
+        RegisteredClient usuariosClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("usuarios-client")
+                .clientSecret("{noop}usuarios-secret-123")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
-                .postLogoutRedirectUri("http://127.0.0.1:8080/")
+                .redirectUri("http://localhost:8001/login/oauth2/code/usuarios-client")
+                .postLogoutRedirectUri("http://localhost:8001/")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .scope("read")
+                .scope("write")
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
                 .build();
 
-        return new InMemoryRegisteredClientRepository(oidcClient);
+        // Cliente para el servicio de Cursos (puerto 8002)
+        RegisteredClient cursosClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("cursos-client")
+                .clientSecret("{noop}cursos-secret-123")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://localhost:8002/login/oauth2/code/cursos-client")
+                .postLogoutRedirectUri("http://localhost:8002/")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("read")
+                .scope("write")
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
+                .build();
+
+        // Cliente para el API Gateway (puerto 8080)
+        RegisteredClient gatewayClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("gateway-client")
+                .clientSecret("{noop}gateway-secret-123")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://localhost:8080/login/oauth2/code/gateway-client")
+                .postLogoutRedirectUri("http://localhost:8080/")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("read")
+                .scope("write")
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
+                .build();
+
+        return new InMemoryRegisteredClientRepository(usuariosClient, cursosClient, gatewayClient);
     }
 
     @Bean
