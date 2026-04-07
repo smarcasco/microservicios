@@ -17,6 +17,16 @@ services:
     networks:
       - microservicios-network
 
+  msvc-auth:
+    image: smcasco/sergio-auth:latest
+    container_name: msvc-auth
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    networks:
+      - microservicios-network
+
   msvc-usuarios:
     image: smcasco/sergio-usuarios:latest
     container_name: msvc-usuarios
@@ -27,8 +37,10 @@ services:
       SPRING_DATASOURCE_USERNAME: msvc_user
       SPRING_DATASOURCE_PASSWORD: msvc_pass
       CLIENTS_CURSOS_URL: http://msvc-cursos:8002
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://msvc-auth:9000
     depends_on:
       - mysql
+      - msvc-auth
     networks:
       - microservicios-network
 
