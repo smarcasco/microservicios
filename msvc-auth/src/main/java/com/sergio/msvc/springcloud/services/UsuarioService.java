@@ -37,6 +37,11 @@ public class UsuarioService implements UserDetailsService {
                 throw new UsernameNotFoundException("No existe el usuario con email: " + email);
             }
 
+            String password = usuario.getPassword();
+            if (password != null && !password.startsWith("{") && !password.startsWith("$2a$")) {
+                password = "{noop}" + password;
+            }
+
             return new User(
                     email,
                     usuario.getPassword(),

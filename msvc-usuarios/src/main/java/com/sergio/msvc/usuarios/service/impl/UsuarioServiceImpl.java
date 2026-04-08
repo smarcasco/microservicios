@@ -51,7 +51,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario saveUser(Usuario usuario) {
         // Codificar la contraseña si no está ya codificada (BCrypt empieza por $2a$)
-        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+        if (usuario.getPassword() != null
+                && !usuario.getPassword().startsWith("$2a$")
+                && !usuario.getPassword().startsWith("{")) {
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
         return repository.save(usuario);
