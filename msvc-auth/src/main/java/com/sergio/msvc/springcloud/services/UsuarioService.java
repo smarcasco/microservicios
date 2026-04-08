@@ -49,11 +49,16 @@ public class UsuarioService implements UserDetailsService {
             log.debug("Usuario encontrado: id={}, email={}", usuario.getId(), usuario.getEmail());
 
             String password = usuario.getPassword();
-            if (password != null && !password.startsWith("{") && !password.startsWith("$2a$")) {
+            if (password != null && password.startsWith("$2a$")) {
+                // BCrypt sin prefijo → añadir {bcrypt} para que DelegatingPasswordEncoder lo reconozca
+                log.debug("Contrasena BCrypt detectada, annadiendo prefijo {{bcrypt}}");
+                password = "{bcrypt}" + password;
+            } else if (password != null && !password.startsWith("{")) {
+                // Texto plano → {noop}
                 log.debug("Contrasena en texto plano detectada, annadiendo prefijo {{noop}}");
                 password = "{noop}" + password;
             } else {
-                log.debug("Contrasena ya codificada (prefijo: {})",
+                log.debug("Contrasena ya tiene prefijo: {}",
                         password != null && password.length() > 7 ? password.substring(0, 7) : "?");
             }
 

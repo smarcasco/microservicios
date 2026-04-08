@@ -5,10 +5,16 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.sergio.msvc.springcloud.auth.PasswordGrantAuthenticationConverter;
+import com.sergio.msvc.springcloud.auth.PasswordGrantAuthenticationProvider;
+import com.sergio.msvc.springcloud.auth.PasswordGrantAuthenticationToken;
 import com.sergio.msvc.springcloud.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,10 +24,17 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.token.*;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -34,13 +47,55 @@ import java.util.UUID;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // ── 1. UserDetailsService: delega en UsuarioService (llama a msvc-usuarios)
+    // ── 1. Filter chain del Servidor de Autorización (orden más alto) ────────
+    @Bean
+    @Order(1)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http,
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder,
+            OAuth2AuthorizationService authorizationService,
+            OAuth2TokenGenerator<? extends org.springframework.security.oauth2.core.OAuth2Token> tokenGenerator)
+            throws Exception {
+
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                new OAuth2AuthorizationServerConfigurer();
+
+        authorizationServerConfigurer
+                .oidc(Customizer.withDefaults())
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                        .accessTokenRequestConverter(new PasswordGrantAuthenticationConverter())
+                        .authenticationProvider(new PasswordGrantAuthenticationProvider(
+                                userDetailsService, passwordEncoder, authorizationService, tokenGenerator))
+                );
+
+        http
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .with(authorizationServerConfigurer, Customizer.withDefaults())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(
+                        new LoginUrlAuthenticationEntryPoint("/login")));
+
+        return http.build();
+    }
+
+    // ── 2. Filter chain por defecto (form login para authorization_code) ─────
+    @Bean
+    @Order(2)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults());
+        return http.build();
+    }
+
+    // ── 3. UserDetailsService: delega en UsuarioService (llama a msvc-usuarios)
     @Bean
     public UserDetailsService userDetailsService(UsuarioService usuarioService) {
         return usuarioService;
     }
 
-    // ── 2. Clientes OAuth2 registrados ──────────────────────────────────────
+    // ── 4. Clientes OAuth2 registrados ──────────────────────────────────────
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient msvcClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -51,6 +106,7 @@ public class SecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(PasswordGrantAuthenticationToken.PASSWORD)   // ← nuevo
                 .redirectUri("http://127.0.0.1:8001/login/oauth2/code/msvc-client")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
@@ -61,7 +117,7 @@ public class SecurityConfig {
         return new InMemoryRegisteredClientRepository(msvcClient);
     }
 
-    // ── 3. Par de claves RSA para firmar tokens ──────────────────────────────
+    // ── 5. Par de claves RSA para firmar tokens ──────────────────────────────
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
         try {
@@ -78,13 +134,29 @@ public class SecurityConfig {
         }
     }
 
-    // ── 4. Decoder JWT ───────────────────────────────────────────────────────
+    // ── 6. Decoder JWT (usado internamente por el AS) ────────────────────────
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
-    // ── 5. Configuracion del servidor (issuer URI) ────────────────────────────
+    // ── 7. Generador de tokens (JWT + opaque access + refresh) ───────────────
+    @Bean
+    public OAuth2TokenGenerator<? extends org.springframework.security.oauth2.core.OAuth2Token> tokenGenerator(
+            JWKSource<SecurityContext> jwkSource) {
+        JwtGenerator jwtGenerator = new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+        OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
+        OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
+        return new DelegatingOAuth2TokenGenerator(jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
+    }
+
+    // ── 8. Servicio de autorizaciones en memoria ─────────────────────────────
+    @Bean
+    public OAuth2AuthorizationService authorizationService() {
+        return new InMemoryOAuth2AuthorizationService();
+    }
+
+    // ── 9. Configuración del servidor (issuer URI) ────────────────────────────
     @Bean
     public AuthorizationServerSettings authorizationServerSettings(
             @Value("${auth.issuer-uri:http://localhost:9000/auth}") String issuerUri) {
@@ -93,7 +165,7 @@ public class SecurityConfig {
                 .build();
     }
 
-    // ── 6. Password encoder (soporta {noop}, {bcrypt}, etc.) ─────────────────
+    // ── 10. Password encoder (soporta {noop}, {bcrypt}, etc.) ────────────────
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
