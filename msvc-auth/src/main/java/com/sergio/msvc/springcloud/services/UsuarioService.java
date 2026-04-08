@@ -44,7 +44,7 @@ public class UsuarioService implements UserDetailsService {
 
             return new User(
                     email,
-                    usuario.getPassword(),
+                    password,  // usar la variable modificada, no usuario.getPassword()
                     true, true, true, true,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
             );
